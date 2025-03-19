@@ -179,9 +179,9 @@
 
                     // Check if the location is within the polygon
                     if (google.maps.geometry.poly.containsLocation(latLng, neighborhoodPolygon)) {
-                        document.getElementById('result').textContent = 'The address is within the neighborhood.';
+                        document.getElementById('result').textContent = 'The address is within the neighborhood/La dirección pertenece al barrio.';
                     } else {
-                        document.getElementById('result').textContent = 'The address is outside the neighborhood.';
+                        document.getElementById('result').textContent = 'The address is outside the neighborhood/La dirección NO pertenece al barrio.';
                     }
 
                     // Add a marker to the map
