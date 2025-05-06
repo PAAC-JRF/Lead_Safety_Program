@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Perth Amboy Alliance For Community</title>
+    <style>
+        /* Basic styling for the page */
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #006186;
+            text-align: center; /* Center inline content like text and images by default */
+        }
+
+        #map {
+            height: 500px;
+            /* Adjust height as needed */
+            width: 100%;
+            /* Make the map fill its container */
+            margin-top: 20px; /* Added some space above the map */
+        }
+
+        /* Container for input and button to center them */
+        .input-container {
+            margin-top: 15px; /* Added some space above the input */
+            margin-bottom: 10px; /* Added some space below the input */
+        }
+
+        #addressInput {
+            width: 300px;
+            /* Adjust input width as needed */
+            padding: 8px;
+            margin-right: 10px;
+            /* Vertically align with the button if needed, but text-align on parent helps */
+        }
+
+        button {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+            min-height: 1.2em; /* Reserve space for the result text to prevent layout shift */
+        }
+
+        #contact-info {
+            margin-top: 30px; /* Added space above contact info */
+            /* text-align: center; will be inherited from body */
+        }
+
+        #contact-info h3 {
+            margin-bottom: 10px;
+        }
+
+        #contact-info p {
+            margin: 5px 0;
+        }
+
+        /* Optional: If you want to constrain the overall width of the content and center that block */
+        .content-wrapper {
+            max-width: 800px; /* Adjust as desired */
+            margin: 0 auto; /* Centers the block itself */
+            /* text-align: center; /* Ensures text inside this centered block is also centered */
+        }
+
+    </style>
+</head>
+
+<body style="background-color: White;"> <div class="content-wrapper"> <img src="https://paac-jrf.github.io/Lead_Safety_Program/Jewish%20Renaissance%20Foundation.png"
+            alt="My Neighborhood Checker Logo" width="210" height="200">
+        <h1>Perth Amboy Alliance For Community</h1>
+        <h2>Neighborhood Checker</h2>
+
+        <div class="input-container"> <input type="text" id="addressInput" placeholder="Enter address in Perth Amboy">
+            <button onclick="checkAddress()">Check Address</button>
+        </div>
+        <p id="result"></p>
+
+        <div id="map"></div>
+
+        <div id="contact-info">
+            <h3>Contact Us</h3>
+            <p>Address: 533 New Brunswick Ave, Perth Amboy, NJ 08861</p>
+            <p>Phone: (732) 324-2113 Ext 133</p>
+            <p>Email: <a href="mailto:paac@jrfnj.org">paac@jrfnj.org</a></p>
+            <p>Verify Your Home Built Year: <a href="https://shorturl.at/1sK6u">https://shorturl.at/1sK6u</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Replace with your actual API key
+        const apiKey = 'YOUR_API_KEY'; // IMPORTANT: Remember to replace YOUR_API_KEY with your actual Google Maps API Key
+
+        let map;
+        let neighborhoodPolygon;
+        let geocoder;
+
+        function initMap() {
+            // Initialize the map
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {
+                    lat: 40.5204,
+                    lng: -74.2755
+                }, // Center on Perth Amboy
+                zoom: 14 // Adjust zoom level as needed
+            });
+
+            // Initialize the geocoder
+            geocoder = new google.maps.Geocoder();
+
+            // New GeoJSON data for the expanded neighborhood
+            const geoJsonData = {
+                "type": "FeatureCollection",
+                "features": [{
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [
+                                [-74.27595969922552, 40.51633139103881],
+                                [-74.27542915118782, 40.51595364153011],
+                                [-74.27442391633234, 40.51574531013898],
+                                [-74.27322735724873, 40.51541639911967],
+                                [-74.27260531226494, 40.51524780285884],
+                                [-74.27245932162008, 40.51514968480218],
+                                [-74.27206487437134, 40.51507036132259],
+                                [-74.27106353808558, 40.51489329444036],
+                                [-74.27058006499864, 40.51608345192788],
+                                [-74.26956913063515, 40.51857360224197],
+                                [-74.26832008382709, 40.5216427654921],
+                                [-74.26730336826132, 40.52437428876818],
+                                [-74.26707632491542, 40.52523182952362],
+                                [-74.26689899141489, 40.52600375304628],
+                                [-74.26682831460991, 40.52698445834117],
+                                [-74.26687611636946, 40.52864263732063],
+                                [-74.2670745507157, 40.5303237511136],
+                                [-74.26756878568966, 40.53265476902566],
+                                [-74.2680751177488, 40.53271947151723],
+                                [-74.26861092597765, 40.53280436729382],
+                                [-74.2701216936378, 40.53293473322782],
+                                [-74.27130140165096, 40.53300290567881],
+                                [-74.27195732106927, 40.5330387873019],
+                                [-74.27222163202543, 40.53308454062679],
+                                [-74.27244332318028, 40.53256062758221],
+                                [-74.2726709026204, 40.53205650464815],
+                                [-74.2728504584069, 40.53162544178066],
+                                [-74.27306812763796, 40.5311885825995],
+                                [-74.2734272925893, 40.53065710925601],
+                                [-74.27380759545818, 40.53053065267216],
+                                [-74.27410563894085, 40.53030448646605],
+                                [-74.27450247689148, 40.53014153299344],
+                                [-74.27487316945947, 40.52987604962787],
+                                [-74.2748136399524, 40.52962497387787],
+                                [-74.27448063253303, 40.52954653174195],
+                                [-74.27456788737359, 40.52921668790123],
+                                [-74.27477944611775, 40.52887861780221],
+                                [-74.27493537990472, 40.52865172456394],
+                                [-74.27542866642216, 40.5279730923134],
+                                [-74.27570716352166, 40.52779466900667],
+                                [-74.27575028536933, 40.52746042600892],
+                                [-74.27539128952652, 40.52619409578088],
+                                [-74.27546201910802, 40.52585429113011],
+                                [-74.27578392623327, 40.52446626000881],
+                                [-74.27612326091828, 40.52302752024715],
+                                [-74.27654315061321, 40.52268583195102],
+                                [-74.27654725723538, 40.52261398527443],
+                                [-74.27680087184771, 40.52190397901054],
+                                [-74.27679981819968, 40.52132753625747],
+                                [-74.27653763770599, 40.52086394858743],
+                                [-74.27641017534012, 40.52054104628061],
+                                [-74.27635097124869, 40.52017777086409],
+                                [-74.27638098636041, 40.51999870985998],
+                                [-74.27620562684992, 40.51996260569755],
+                                [-74.2762095953207, 40.51995963380677],
+                                [-74.2762059098974, 40.51996247927111],
+                                [-74.27621275488781, 40.51995482678512],
+                                [-74.2761408577743, 40.51995581412245],
+                                [-74.27614243739836, 40.5198656828597],
+                                [-74.27609850473377, 40.51978101852569],
+                                [-74.27611931867648, 40.51966506988504],
+                                [-74.27602903323498, 40.51960970280876],
+                                [-74.27612894832632, 40.51926347171825],
+                                [-74.27610947783708, 40.51892132748576],
+                                [-74.27609839021007, 40.51877271694013],
+                                [-74.27618369379697, 40.51866093658302],
+                                [-74.27607751680367, 40.51845466114771],
+                                [-74.27616908510554, 40.51817481715432],
+                                [-74.2759463964926, 40.51805327686598],
+                                [-74.27617521927166, 40.5174341689456],
+                                [-74.27601079517977, 40.51719767620646],
+                                [-74.27603734369923, 40.51688463118442],
+                                [-74.27613784860777, 40.51664515872409],
+                                [-74.27593044659551, 40.51649244640101],
+                                [-74.27595969922552, 40.51633139103881]
+                            ]
+                        ]
+                    },
+                    "properties": {
+                        "name": "PAAC Mapped",
+                        "styleUrl": "#__managed_style_6E2DE471D236DF360033",
+                        "fill-opacity": 0.5019607843137255,
+                        "fill": "#42a5f5",
+                        "stroke-opacity": 1,
+                        "stroke": "#1976d2",
+                        "stroke-width": 4,
+                        "icon-offset": [64, 128],
+                        "icon-offset-units": ["pixels", "insetPixels"],
+                        "icon": "https://earth.google.com/earth/document/icon?color=1976d2&id=2000&scale=4"
+                    },
+                    "id": "53BCE55B7C000003"
+                }]
+            };
+
+            // Extract coordinates and create the polygon
+            const neighborhoodCoords = geoJsonData.features[0].geometry.coordinates[0].map(coord => ({
+                lat: coord[1],
+                lng: coord[0]
+            }));
+
+            // Create the polygon on the map
+            neighborhoodPolygon = new google.maps.Polygon({
+                paths: neighborhoodCoords,
+                strokeColor: '#00FF00',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#00FF00',
+                fillOpacity: 0.35,
+            });
+
+            neighborhoodPolygon.setMap(map);
+        }
+
+        // Function to check if an address is within the neighborhood
+        function checkAddress() {
+            const address = document.getElementById('addressInput').value;
+            const resultElement = document.getElementById('result'); // Cache the element
+
+            if (!address.trim()) { // Basic validation: check if address is not empty
+                resultElement.textContent = 'Please enter an address./Por favor ingrese una dirección.';
+                return;
+            }
+
+            geocoder.geocode({
+                address: address,
+                componentRestrictions: {
+                    locality: 'Perth Amboy',
+                    country: 'US' // Good to be specific
+                }
+            }, (results, status) => {
+                if (status === 'OK' && results[0]) {
+                    const location = results[0].geometry.location;
+                    // const latLng = { lat: location.lat(), lng: location.lng() }; // Not strictly needed if just passing `location`
+
+                    // Check if the location is within the polygon
+                    if (google.maps.geometry.poly.containsLocation(location, neighborhoodPolygon)) {
+                        resultElement.textContent = 'The address is within the neighborhood/La dirección pertenece al vecindario.';
+                    } else {
+                        resultElement.textContent = 'The address is outside the neighborhood/La dirección NO pertenece al vecindario.';
+                    }
+
+                    // Add a marker to the map
+                    new google.maps.Marker({
+                        position: location,
+                        map: map,
+                        title: results[0].formatted_address // Add a title to the marker
+                    });
+                    map.setCenter(location); // Center the map on the searched address
+                    map.setZoom(16); // Optionally zoom in closer
+                } else if (status === 'ZERO_RESULTS') {
+                    resultElement.textContent = 'Address not found in Perth Amboy. Please check the address and try again./Dirección no encontrada en Perth Amboy. Por favor, revise la dirección e intente de nuevo.';
+                } else {
+                    resultElement.textContent = 'Address not found or error: ' + status + '/Dirección no encontrada o error: ' + status;
+                }
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=geometry&callback=initMap" async
+        defer></script> </body>
+
+</html>
