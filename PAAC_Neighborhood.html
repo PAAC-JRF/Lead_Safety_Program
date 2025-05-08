@@ -202,7 +202,7 @@
             neighborhoodPolygon.setMap(map);
         }
 
-        // Function to check if an address is within the neighborhood
+// Function to check if an address is within the neighborhood
         function checkAddress() {
             const address = document.getElementById('addressInput').value;
             geocoder.geocode({
@@ -225,14 +225,26 @@
                         document.getElementById('result').textContent = 'The address is outside the neighborhood/La dirección NO pertenece al vecindario.';
                     }
 
-                    // Add a marker to the map
-                    new google.maps.Marker({
+                    // ---- MODIFIED MARKER LOGIC ----
+                    // If there's an existing marker, remove it from the map
+                    if (currentMarker) {
+                        currentMarker.setMap(null);
+                    }
+
+                    // Add a new marker to the map and store it in currentMarker
+                    currentMarker = new google.maps.Marker({ // Assign the new marker
                         position: location,
                         map: map
                     });
+                    // ---- END OF MODIFIED MARKER LOGIC ----
+
                     map.setCenter(location); // Center the map on the searched address
                 } else {
                     document.getElementById('result').textContent = 'Address not found/Dirección no encontrada.';
+                    // Optionally, you might want to remove the marker if the address is not found
+                    // if (currentMarker) {
+                    //     currentMarker.setMap(null);
+                    // }
                 }
             });
         }
