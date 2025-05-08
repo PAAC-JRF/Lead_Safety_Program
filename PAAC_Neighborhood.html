@@ -202,52 +202,53 @@
             neighborhoodPolygon.setMap(map);
         }
 
-// Function to check if an address is within the neighborhood
-        function checkAddress() {
-            const address = document.getElementById('addressInput').value;
-            geocoder.geocode({
-                address: address,
-                componentRestrictions: {
-                    locality: 'Perth Amboy'
-                }
-            }, (results, status) => {
-                if (status === 'OK' && results[0]) {
-                    const location = results[0].geometry.location;
-                    const latLng = {
-                        lat: location.lat(),
-                        lng: location.lng()
-                    };
+    // Function to check if an address is within the neighborhood
+    function checkAddress() {
+        const address = document.getElementById('addressInput').value;
+        geocoder.geocode({
+            address: address,
+            componentRestrictions: {
+                locality: 'Perth Amboy'
+            }
+        }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+                const location = results[0].geometry.location;
+                const latLng = {
+                    lat: location.lat(),
+                    lng: location.lng()
+                };
 
-                    // Check if the location is within the polygon
-                    if (google.maps.geometry.poly.containsLocation(latLng, neighborhoodPolygon)) {
-                        document.getElementById('result').textContent = 'The address is within the neighborhood/La dirección pertenece al vecindario.';
-                    } else {
-                        document.getElementById('result').textContent = 'The address is outside the neighborhood/La dirección NO pertenece al vecindario.';
-                    }
-
-                    // ---- MODIFIED MARKER LOGIC ----
-                    // If there's an existing marker, remove it from the map
-                    if (currentMarker) {
-                        currentMarker.setMap(null);
-                    }
-
-                    // Add a new marker to the map and store it in currentMarker
-                    currentMarker = new google.maps.Marker({ // Assign the new marker
-                        position: location,
-                        map: map
-                    });
-                    // ---- END OF MODIFIED MARKER LOGIC ----
-
-                    map.setCenter(location); // Center the map on the searched address
+                // Check if the location is within the polygon
+                if (google.maps.geometry.poly.containsLocation(latLng, neighborhoodPolygon)) {
+                    document.getElementById('result').textContent = 'The address is within the neighborhood/La dirección pertenece al vecindario.';
                 } else {
-                    document.getElementById('result').textContent = 'Address not found/Dirección no encontrada.';
-                    // Optionally, you might want to remove the marker if the address is not found
-                    // if (currentMarker) {
-                    //     currentMarker.setMap(null);
-                    // }
+                    document.getElementById('result').textContent = 'The address is outside the neighborhood/La dirección NO pertenece al vecindario.';
                 }
-            });
-        }
+
+                // ---- MODIFIED MARKER LOGIC ----
+                // If there's an existing marker, remove it from the map
+                if (currentMarker) {
+                    currentMarker.setMap(null);
+                }
+
+                // Add a new marker to the map and store it in currentMarker
+                currentMarker = new google.maps.Marker({ // Assign the new marker
+                    position: location,
+                    map: map // 'map' should be your initialized Google Map object
+                });
+                // ---- END OF MODIFIED MARKER LOGIC ----
+
+                map.setCenter(location); // Center the map on the searched address
+            } else {
+                document.getElementById('result').textContent = 'Address not found/Dirección no encontrada.';
+                // This part below is still commented out, which is fine for now.
+                // If it were uncommented, it would remove the pin if an address isn't found.
+                // if (currentMarker) {
+                //     currentMarker.setMap(null);
+                // }
+            }
+        });
+    }
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA220eKGX6kPN7opoXSU7zYX7NT9h3pAxc&libraries=geometry&callback=initMap" async
         defer></script>
